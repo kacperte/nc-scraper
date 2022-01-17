@@ -41,7 +41,7 @@ WebDriverWait(driver, 20).until(
 )
 
 df = None
-for i in range(num+1):
+for i in range(num + 1):
     # Select data from table
     data = (
         WebDriverWait(driver, 20)
@@ -64,4 +64,4 @@ for i in range(num+1):
     ).click()
 
     if i == num:
-        df.to_csv('transaction_history.csv')
+        df.to_csv("transaction_history.csv")
