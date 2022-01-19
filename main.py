@@ -38,7 +38,7 @@ WebDriverWait(driver, 20).until(
 )
 
 df = None
-for i in range(num + 1):
+for _ in range(num + 1):
     # Select data from table
     data = (
         WebDriverWait(driver, 20)
@@ -50,15 +50,18 @@ for i in range(num + 1):
         .get_attribute("outerHTML")
     )
     # Save to DataFrame
-    if df is None:
-        df = pd.read_html(data)[0]
-    else:
+    if df:
         df_temp = pd.read_html(data)[0]
         df = df.append(df_temp).reset_index(drop=True)
+    else:
+        df = pd.read_html(data)[0]
 
+    # Click to next page
     WebDriverWait(driver, 20).until(
         EC.element_to_be_clickable((By.XPATH, '//*[@id="maindiv"]/div[1]/nav/ul/li[4]'))
     ).click()
 
-    if i == num:
-        df.to_csv("transaction_history.csv")
+
+# Save to csv
+df.to_csv("transaction_history.csv")
+
