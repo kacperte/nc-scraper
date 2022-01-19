@@ -5,6 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd
+import math
 
 # Chrome drive setup
 options = Options()
@@ -26,11 +27,7 @@ WebDriverWait(driver, 20).until(
 # Locate number of total transfer to check how many pages have table
 num_trans = driver.find_element(By.XPATH, '//*[@id="totaltxns"]').text
 num_trans = int(num_trans)
-num = num_trans / 25
-if num - int(num) == 0:
-    num = int(num)
-else:
-    num = int(num) + 1
+num = math.ceil(num_trans / 25)
 
 
 # Switch to frame with NC transaction table
