@@ -38,7 +38,7 @@ WebDriverWait(driver, 20).until(
 )
 
 df = None
-for _ in range(num + 1):
+for _ in range(num):
     # Select data from table
     data = (
         WebDriverWait(driver, 20)
