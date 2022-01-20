@@ -19,6 +19,38 @@ url = "https://polygonscan.com/token/0x64a795562b02830ea4e43992e761c96d208fc58d"
 driver = webdriver.Chrome(service=s, options=options)
 driver.get(url)
 
+
+# Func to clean data
+def cleaning_data(PATH_FILE):
+    file = pd.read_csv(PATH_FILE)
+    # Remove useless columns
+    file = file.drop(["Unnamed: 0", "Unnamed: 4", "Unnamed: 7"], axis=1)
+    # Format to date type
+    file["Date Time (UTC)"] = pd.to_datetime(file["Date Time (UTC)"])
+    # File with correct name
+    file.loc[file.Method == "Add Liquidity ET...", "Method"] = "Add Liquidity ETH"
+    file.loc[
+        file.Method == "Swap ETH For Exa...", "Method"
+    ] = "Swap ETH For Exact Tokens"
+    file.loc[
+        file.Method == "Swap Exact ETH F...", "Method"
+    ] = "Swap Exact ETH For Tokens"
+    file.loc[
+        (file.Method == "Swap Exact Token...")
+        & (file.To == "0x78e16d2facb80ac536887d1376acd4eeedf2fa08"),
+        "Method",
+    ] = "Swap Exact Tokens For ETH Supporting Fee On Transfer Tokens"
+    file.loc[
+        (file.Method == "Swap Exact Token..."), "Method"
+    ] = "Swap Exact Tokens For Tokens"
+    file.loc[
+        (file.Method == "Remove Liquidity..."), "Method"
+    ] = "Remove Liquidity With Permit"
+    # Add Token column and fill it
+    file["Token"] = "Natluk Community Token"
+    file.to_csv("transaction_history_modified.csv")
+
+
 # Cookies
 WebDriverWait(driver, 20).until(
     EC.element_to_be_clickable((By.CSS_SELECTOR, "button#btnCookie"))
@@ -37,6 +69,11 @@ WebDriverWait(driver, 20).until(
     )
 )
 
+# Switch data format in table
+WebDriverWait(driver, 20).until(
+    EC.element_to_be_clickable((By.CSS_SELECTOR, "a#lnkTokenTxnsAgeDateTime"))
+).click()
+
 df = None
 for _ in range(num):
     # Select data from table
@@ -50,18 +87,19 @@ for _ in range(num):
         .get_attribute("outerHTML")
     )
     # Save to DataFrame
-    if df:
+    if df is None:
+        df = pd.read_html(data)[0]
+    else:
         df_temp = pd.read_html(data)[0]
         df = df.append(df_temp).reset_index(drop=True)
-    else:
-        df = pd.read_html(data)[0]
 
     # Click to next page
     WebDriverWait(driver, 20).until(
         EC.element_to_be_clickable((By.XPATH, '//*[@id="maindiv"]/div[1]/nav/ul/li[4]'))
     ).click()
 
-
 # Save to csv
 df.to_csv("transaction_history.csv")
 
+# Clean data and save to csv
+cleaning_data("transaction_history.csv")
