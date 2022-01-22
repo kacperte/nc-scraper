@@ -90,7 +90,6 @@ for _ in range(num):
     if df.empty:
         df_temp = pd.read_html(data)[0]
         df = df.append(df_temp).reset_index(drop=True)
-
     else:
         df = pd.read_html(data)[0]
 
