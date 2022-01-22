@@ -74,7 +74,7 @@ WebDriverWait(driver, 20).until(
     EC.element_to_be_clickable((By.CSS_SELECTOR, "a#lnkTokenTxnsAgeDateTime"))
 ).click()
 
-df = None
+df = pd.DataFrame()
 for _ in range(num):
     # Select data from table
     data = (
@@ -87,11 +87,12 @@ for _ in range(num):
         .get_attribute("outerHTML")
     )
     # Save to DataFrame
-    if df is None:
-        df = pd.read_html(data)[0]
-    else:
+    if df.empty:
         df_temp = pd.read_html(data)[0]
         df = df.append(df_temp).reset_index(drop=True)
+
+    else:
+        df = pd.read_html(data)[0]
 
     # Click to next page
     WebDriverWait(driver, 20).until(
