@@ -1,7 +1,8 @@
 import pandas as pd
 
 
-def cleaning(df):
+def cleaning(file):
+    df = pd.read_csv(file)
     # Rename right value from Method column to 'Purchase of NC coins'
     con_1 = (df.Method == "Swap Exact Token...") & (df.From == '0x78e16d2facb80ac536887d1376acd4eeedf2fa08')
     con_2 = (df.Method == "Swap")
