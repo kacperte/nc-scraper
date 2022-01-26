@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd
 import math
+from data_cleaning import cleaning
 
 # Chrome drive setup
 options = Options()
@@ -14,42 +15,11 @@ options.add_experimental_option("excludeSwitches", ["enable-automation"])
 options.add_experimental_option("excludeSwitches", ["enable-logging"])
 options.add_experimental_option("useAutomationExtension", False)
 options.add_argument("--disable-blink-features=AutomationControlled")
+options.add_argument('headless')
 s = Service(r"C:\Users\kacpe\OneDrive\Pulpit\Python\Projekty\chromedriver.exe")
 url = "https://polygonscan.com/token/0x64a795562b02830ea4e43992e761c96d208fc58d"
 driver = webdriver.Chrome(service=s, options=options)
 driver.get(url)
-
-
-# Func to clean data
-def cleaning_data(PATH_FILE):
-    file = pd.read_csv(PATH_FILE)
-    # Remove useless columns
-    file = file.drop(["Unnamed: 0", "Unnamed: 4", "Unnamed: 7"], axis=1)
-    # Format to date type
-    file["Date Time (UTC)"] = pd.to_datetime(file["Date Time (UTC)"])
-    # File with correct name
-    file.loc[file.Method == "Add Liquidity ET...", "Method"] = "Add Liquidity ETH"
-    file.loc[
-        file.Method == "Swap ETH For Exa...", "Method"
-    ] = "Swap ETH For Exact Tokens"
-    file.loc[
-        file.Method == "Swap Exact ETH F...", "Method"
-    ] = "Swap Exact ETH For Tokens"
-    file.loc[
-        (file.Method == "Swap Exact Token...")
-        & (file.To == "0x78e16d2facb80ac536887d1376acd4eeedf2fa08"),
-        "Method",
-    ] = "Swap Exact Tokens For ETH Supporting Fee On Transfer Tokens"
-    file.loc[
-        (file.Method == "Swap Exact Token..."), "Method"
-    ] = "Swap Exact Tokens For Tokens"
-    file.loc[
-        (file.Method == "Remove Liquidity..."), "Method"
-    ] = "Remove Liquidity With Permit"
-    # Add Token column and fill it
-    file["Token"] = "Natluk Community Token"
-    file.to_csv("transaction_history_modified.csv")
-
 
 # Cookies
 WebDriverWait(driver, 20).until(
@@ -87,7 +57,7 @@ for _ in range(num):
         .get_attribute("outerHTML")
     )
     # Save to DataFrame
-    if df.empty:
+    if not df.empty:
         df_temp = pd.read_html(data)[0]
         df = df.append(df_temp).reset_index(drop=True)
     else:
@@ -99,7 +69,7 @@ for _ in range(num):
     ).click()
 
 # Save to csv
-df.to_csv("transaction_history.csv")
+df.to_csv(r"C:\Users\kacpe\OneDrive\Pulpit\Python\Projekty\nc-coin\app\transaction_history.csv")
 
 # Clean data and save to csv
-cleaning_data("transaction_history.csv")
+cleaning('transaction_history.csv')
