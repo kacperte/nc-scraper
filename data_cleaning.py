@@ -34,7 +34,10 @@ def cleaning(file):
     df = df.drop(["Unnamed: 0", "Unnamed: 4", "Unnamed: 7"], axis=1)
 
     # Format to date type
-    df["Date Time (UTC)"] = pd.to_datetime(df["Date Time (UTC)"])
+    # split 'Date Time (UTC)' into two columns 'Date' and "Time", then format to 'Date' to datetime format
+    df['Date'], df['Time'] = zip(*df['Date Time (UTC)'].str.split().tolist())
+    del df['Date Time (UTC)']
+    df["Date"] = pd.to_datetime(df["Date"])
 
     # Save formatted file
     df.to_csv("transaction_history_formatted.csv")

@@ -72,4 +72,4 @@ for _ in range(num):
 df.to_csv(r"C:\Users\kacpe\OneDrive\Pulpit\Python\Projekty\nc-coin\app\transaction_history.csv")
 
 # Clean data and save to csv
-cleaning('transaction_history.csv')
+# cleaning('transaction_history.csv')
