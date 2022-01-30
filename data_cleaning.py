@@ -1,8 +1,16 @@
 import pandas as pd
 
 
-def cleaning(file):
-    df = pd.read_csv(file)
+def clean_nc_transaction_file(file_path: str, filename: str) -> None:
+    """
+    Function that clean scrpaed file with NC coin transaction - mostly delete useless columns, change name in Method
+    column and fix Date and Time columns
+
+    :param file_path: File path to scraped file
+    :param filename: filename for return DateFrame
+    :return: None
+    """
+    df = pd.read_csv(file_path)
     # Rename right value from Method column to 'Purchase of NC coins'
     con_1 = (df.Method == "Swap Exact Token...") & (df.From == '0x78e16d2facb80ac536887d1376acd4eeedf2fa08')
     con_2 = (df.Method == "Swap")
@@ -40,5 +48,5 @@ def cleaning(file):
     df["Date"] = pd.to_datetime(df["Date"])
 
     # Save formatted file
-    df.to_csv("transaction_history_formatted.csv")
+    df.to_csv(filename)
 
