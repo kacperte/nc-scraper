@@ -35,7 +35,7 @@ def clean_nc_transaction_file(file_path: str, filename: str) -> None:
     # Remove useless value form Method column
     value_to_remove = df.loc[
         (df.Method == "Stake") | (df.Method == "Fund") | (df.Method == "0xf574133c") | (df.Method == "0x6d9cec22") | (
-                    df.Method == "Claim") | (df.Method == "Unstake")].index
+                df.Method == "Unstake")].index
     df = df.drop(value_to_remove, axis=0)
 
     # Remove useless columns
